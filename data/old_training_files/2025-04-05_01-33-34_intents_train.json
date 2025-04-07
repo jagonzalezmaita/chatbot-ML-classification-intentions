@@ -1,61 +1,6 @@
 {
     "intents": [
         {
-            "intent": "Saludo",
-            "examples": [
-                "Hola",
-                "Buenos días",
-                "Buenas tardes",
-                "¿Cómo estás?",
-                "¡Hey!",
-                "Hola, ¿cómo te va?"
-            ],
-            "response": "¡Hola! ¿En qué puedo ayudarte hoy?"
-        },
-        {
-            "intent": "Despedida",
-            "examples": [
-                "Adiós",
-                "Hasta luego",
-                "Nos vemos",
-                "Chao",
-                "Hasta pronto"
-            ],
-            "response": "¡Hasta luego! Que tengas un excelente día."
-        },
-        {
-            "intent": "Gracias",
-            "examples": [
-                "Gracias",
-                "Muchas gracias",
-                "Te agradezco",
-                "Gracias por tu ayuda",
-                "Te agradezco mucho",
-                "Mil gracias"
-            ],
-            "response": "¡De nada! ¡Estoy aquí para ayudarte!"
-        },
-        {
-            "intent": "Clima",
-            "examples": [
-                "¿Cómo está el clima?",
-                "¿Qué tiempo hace?",
-                "Hace calor hoy",
-                "Está lloviendo",
-                "¿Está soleado?"
-            ],
-            "response": "Actualmente no tengo acceso a la información del clima, pero puedes consultarlo en una aplicación de pronóstico."
-        },
-        {
-            "intent": "Locacion",
-            "examples": [
-                "¿Dónde estás?",
-                "¿En qué ciudad estás?",
-                "¿Dónde te encuentras?"
-            ],
-            "response": "Soy un bot, no tengo una ubicación física, pero puedo ayudarte con cualquier pregunta."
-        },
-        {
             "intent": "Pregunta sobre productos",
             "examples": [
                 "¿Tienen este producto disponible?",

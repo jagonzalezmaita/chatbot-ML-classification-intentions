@@ -1,0 +1,20 @@
+{
+    "intents": [
+        {
+            "intent": "Pregunta sobre productos",
+            "examples": [
+                "¿Tienen este producto en otro color disponible?",
+                "¿Cuánto cuesta el producto?"
+            ],
+            "response": "V2 Puedes consultar los detalles de los productos en nuestra tienda online o preguntarme por más información."
+        },
+        {
+            "intent": "Educación",
+            "examples": [
+                "¿Qué grado académico tienes?",
+                "¿Cómo respiras?"
+            ],
+            "response": "No soy humano."
+        }
+    ]
+}

@@ -109,14 +109,6 @@
                 "Quisiera saber más sobre los servicios"
             ],
             "response": "Puedes ponerte en contacto con nuestro equipo de atención al cliente a través de correo electrónico o llamando al número de soporte."
-        },
-        {
-            "intent": "Educación",
-            "examples": [
-                "¿Qué grado académico tienes?",
-                "Vas al colegio"
-            ],
-            "response": "No soy humano."
         }
     ]
 }

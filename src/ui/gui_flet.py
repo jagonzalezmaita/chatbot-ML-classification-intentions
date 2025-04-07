@@ -1,4 +1,7 @@
-''' To solve the problem of not finding the /src folder when import functions.'''
+''' 
+To resolve the issue of not finding the /src folder when importing functions, change the current 
+working directory of the Python process to the root directory of the project.
+'''
 import os
 import sys
 # Get the root directory of the project
@@ -10,103 +13,137 @@ if project_root not in sys.path:
     sys.path.append(project_root)   # Add the root directory to sys.path
 
 
-
 import flet as ft
-from src.chatbot import train_classifier, retrain_classifier
-from src.data_preprocessing import load_data
+from src.chatbot import process_message
+
+# Create a column to display errors
+error_column = ft.Column(scroll=ft.ScrollMode.ADAPTIVE, expand=True, visible=False)
 
 def main(page: ft.Page):
-    # Window settings
-    page.window.width = 400             # window's width is 400 px
-    page.window.height = 600            # window's height is 600 px
-    page.window.resizable = False       # window is not resizable
-    page.window.maximizable = False     # window is not maximizable
-    page.window.center()                # window is aligned in the center of the screen
-    
-    
-    # Paso 1: Ejecutar chatbot.py para entrenar el modelo y obtener el clasificador
-    classifier = train_classifier()
+    try:
+        # Window settings
+        page.window.width = 400             # window's width is 400 px
+        page.window.height = 600            # window's height is 600 px
+        page.window.resizable = False       # window is not resizable
+        page.window.maximizable = False     # window is not maximizable
+        page.window.center()                # window is aligned in the center of the screen    
+        # Create a container to display the conversation history
+        # auto_scroll=True performs automatic scrolling, if scroll_to is used it must be false
+        conversation_history = ft.Column(scroll=ft.ScrollMode.ADAPTIVE,
+                                            auto_scroll=False, 
+                                            expand=True,
+                                        )
+        # Add initial text to the page""
+        conversation_history.controls.append(ft.TextField("¡Hola! Soy un chatbot. "
+                                                            "\n¿Cómo puedo ayudarte?",
+                                                            multiline=True, 
+                                                            border=ft.InputBorder.NONE)
+                                            )
+        page.add(conversation_history)    
+        # Variable to track whether the conversation has ended
+        conversation_ended = False
 
-    # Crear un contenedor para mostrar el historial de la conversación
-    # auto_scroll= True realiza el scroll automatico, si se usa scroll_to debe ser false
-    conversation_history = ft.Column(scroll=ft.ScrollMode.ADAPTIVE,
-                                        auto_scroll=False, 
-                                        expand=True,
-                                    )
-    
+        # Function that is executed when the user sends the message
+        def on_submit(e):
+            # Reference a variable that is in the scope of a parent function (but not 
+            # in global scope).
+            nonlocal conversation_ended
+            try:
+                # If the conversation has already ended, do not process any more entries
+                if conversation_ended:
+                    return        
+                # Remove spaces at the beginning and end
+                user_input = input_field.value.strip()
+                # If the user types 'exit' or 'Exit', we end the conversation
+                if user_input.lower() == 'exit':
+                    conversation_history.controls.append(ft.TextField("Gracias por conversar. "
+                                                                        "¡Hasta luego!",
+                                                                        multiline=True, 
+                                                                        border=ft.InputBorder.NONE)
+                                                        )
+                    # Scroll down to the bottom to always keep the newest messages visible
+                    conversation_history.scroll_to(offset=-1, duration=1)
+                    # Disable the text field and mark the conversation as over
+                    input_field.disabled = True
+                    conversation_ended = True
+                    # Refresh page to reflect disabled status
+                    page.update() 
+                    return  # End the conversation        
+                # Add user input to history (right-aligned and multi-line)
+                conversation_history.controls.append(
+                    ft.Row(
+                        [ft.TextField(f"Tú: \n{user_input}",
+                                        text_align= ft.TextAlign.RIGHT,
+                                        multiline=True, 
+                                        border=ft.InputBorder.NONE)
+                        ],
+                        # Aligns to the right when using wrap, otherwise 'alignment'
+                        run_alignment=ft.MainAxisAlignment.END,
+                        #the Row will put child controls into additional rows (runs) if they don't 
+                        # fit a single row.            
+                        wrap=True
+                    )
+                )
+                # The response is obtained based on the message entered by the user
+                response = process_message(user_input)         
+                # Add the chatbot's response to the history (left-aligned and multi-line)
+                conversation_history.controls.append(
+                    ft.Row(
+                        [ft.TextField(f"Chatbot: \n{response}",
+                                        multiline=True, 
+                                        border=ft.InputBorder.NONE)
+                        ],
+                        # Aligns to the left when using wrap, otherwise 'alignment'
+                        run_alignment=ft.MainAxisAlignment.START,
+                        #the Row will put child controls into additional rows (runs) if they don't 
+                        # fit a single row.
+                        wrap=True, 
+                    )
+                )        
+                # Refresh the page to reflect the full history
+                page.update()
+                # Scroll down to the bottom to always keep the newest messages visible
+                conversation_history.scroll_to(offset=-1, duration=1)
+                # Clear the text field for the next interaction
+                input_field.value = ""
+                input_field.focus()
+            except Exception as e:
+                    print(f"Error in the on_submit function: {e}")
+                    error_column.controls.append(ft.TextField(f"Error al procesar tu mensaje: \n{e}", 
+                                                                multiline=True, 
+                                                                border=ft.InputBorder.UNDERLINE)
+                                                )
+                    error_column.visible=True
+                    page.update()
+                    # Scroll down to the bottom to always keep the newest messages visible
+                    conversation_history.scroll_to(offset=-1, duration=1)
+                    # Scroll down to the bottom to always keep the newest error visible
+                    error_column.scroll_to(offset=-1, duration=1)
+                    input_field.value = ""
+                    input_field.focus()
 
-    # Agregar texto inicial en la página
-    conversation_history.controls.append(ft.Text("¡Hola! Soy un chatbot. \n¿Cómo puedo ayudarte?"))
-    page.add(conversation_history)
-
-    # Variable para rastrear si la conversación ha terminado
-    conversation_ended = False
-    
-    
-    # Función que se ejecuta cuando el usuario envía el mensaje
-    def on_submit(e):
-        nonlocal conversation_ended
-
-        # Si la conversación ya terminó, no procesar más entradas
-        if conversation_ended:
-            return
-        
-        
-        user_input = input_field.value.strip()  # Elimina espacios al principio y final
-
-        # Si el usuario escribe 'exit', finalizamos la conversación
-        if user_input.lower() == 'exit':
-            conversation_history.controls.append(ft.Text("Gracias por conversar. ¡Hasta luego!"))
-            page.update()
-            
-            # Deshabilitar el campo de texto y marcar la conversación como terminada
-            input_field.disabled = True
-            conversation_ended = True
-            page.update()  # Para reflejar el estado deshabilitado
-            return  # Finaliza la conversación
-
-        # Agregar la entrada del usuario al historial (alineado a la derecha)
-        conversation_history.controls.append(
-            ft.Row(
-                [ft.Text(f"Tú: {user_input}")],
-                wrap=True,
-                alignment=ft.MainAxisAlignment.END # Alinea a la derecha
-            )
-        )
-
-        # Clasificar la intención del mensaje del usuario
-        intent = classifier.predict(user_input)
-
-        # Responder con la intención y la respuesta
-        for intent_data in classifier.model.named_steps['multinomialnb'].classes_:
-            if intent == intent_data:
-                response = next(item['response'] for item in load_data('data/intents.json')['intents'] if item['intent'] == intent_data)
-                break
-            
-        # Agregar la respuesta del chatbot al historial (alineado a la izquierda)
-        conversation_history.controls.append(
-            ft.Row(
-                #[ft.Text(f"Chatbot, tú intensión es: {intent}")],
-                [ft.Text(f"Chatbot: {response}")],
-                wrap=True,
-                alignment=ft.MainAxisAlignment.START  # Alinea a la izquierda
-            )
-        )
-        
-        # Actualizar la página para reflejar el historial completo
-        page.update()
-        # se realiza el scroll al final para asi dejar siempre visible los mensajes mas nuevos
-        conversation_history.scroll_to(offset=-1, duration=1)
-        # Limpiar el campo de texto para la próxima interacción
-        input_field.value = ""
+        # Create a text field to enter messages
+        input_field = ft.TextField(label="Escribe tu mensaje", on_submit=on_submit)
+        page.add(input_field)
+        # Focus on the text field after adding it to the page
         input_field.focus()
+        # Add the error column to the page to display errors
+        page.add(error_column)
+    except Exception as e:
+        print(f"Error in main function: {e}")
+        error_column.controls.append(ft.TextField(f"Hubo un error en la aplicación: {e}", 
+                                                    multiline=True, 
+                                                    border=ft.InputBorder.UNDERLINE)
+                                    )
+        error_column.visible=True
+        page.update()
+        # Scroll down to the bottom to always keep the newest messages visible
+        conversation_history.scroll_to(offset=-1, duration=1)
+        # Scroll down to the bottom to always keep the newest error visible
+        error_column.scroll_to(offset=-1, duration=1)
+        input_field.value = ""
+        input_field.focus()        
 
-    # Crear un campo de texto para ingresar mensajes
-    input_field = ft.TextField(label="Escribe tu mensaje", on_submit=on_submit)
-    page.add(input_field)
-    # Inicializar el foco en el campo de texto después de agregarlo a la página
-    input_field.focus()
-    
 
-# Ejecutar la aplicación Flet
+# Run the Flet application
 ft.app(target=main)

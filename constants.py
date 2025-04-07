@@ -1,19 +1,19 @@
 import os
 
-# Obtener la ruta absoluta al directorio raíz del proyecto
+# Get the absolute path to the project root directory
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-# Definir rutas absoluta dentro del proyecto
+# Define absolute paths within the project
 DATA_PATH = os.path.join(PROJECT_ROOT, 'data')
 MODELS_PATH = os.path.join(PROJECT_ROOT, 'models')
 SRC_PATH = os.path.join(PROJECT_ROOT, 'src')
+OLD_TRAIN_FILES_PATH = os.path.join(PROJECT_ROOT, 'data/old_training_files')
+OLD_INTENTS_FILES_PATH = os.path.join(PROJECT_ROOT, 'data/old_intents_files')
 
-# Rutas a archivos específicos
+# Paths to specific files
 INTENTS_JSON_PATH = os.path.join(DATA_PATH, 'intents.json')
 INTENTS_TRAIN_JSON_PATH = os.path.join(DATA_PATH, 'intents_train.json')
 
-# print(PROJECT_ROOT)
-# print(DATA_PATH)
-# print(MODELS_PATH)
-# print(SRC_PATH)
-# print(INTENTS_JSON_PATH)
+# Name of specific files
+INTENTS_JSON = 'intents.json'
+INTENTS_TRAIN_JSON = 'intents_train.json'
