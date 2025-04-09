@@ -82,9 +82,6 @@ Navega al directorio del proyecto:
 ## Entorno de Desarrollo
 
 El proyecto fue desarrollado y probado en **Visual Studio Code (VSCode)**, utilizando las siguientes herramientas y extensiones.
-
-- **Jupyter Extension for Visual Studio Code, de Microsoft** contiene 4 paquetes de extensión: Jupyter Keymap, Jupyter Notebook Renderers, Jupyter Slide Show y Jupyter Cell Tag.
-- **Jupyter PowerToys, de Microsoft** Proporciona características experimentales para extender la experiencia del cuaderno de Jupyter en VS Code.
 - **Python, de Microsoft** 
     - **Python Debugger, de Microsoft** Proporciona una experiencia de depuración fluida permitiándole establecer puntos de interrupción, pasar el código, inspeccionar variables y realizar otras tareas esenciales de depuración. 
     - **Pylance, de Microsoft** Para mejorar la inteligencia de código y la depuración en Python.
